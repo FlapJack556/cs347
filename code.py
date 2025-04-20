@@ -142,7 +142,42 @@ class PlanningModule:
 
     def publish_plan(self, bus):
         pass
+        
+#Supporting classes for simulation
+class PIDController:
+    def init(self, kp=1.0, ki=0.0, kd=0.0):
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.previous_error = 0
+        self.integral = 0
 
+    def compute(self, target, current):
+        error = target - current
+        self.integral += error
+        derivative = error - self.previous_error
+        output = self.kp * error + self.ki * self.integral + self.kd * derivative
+        self.previous_error = error
+        return output
+
+class VehicleState:
+    def init(self, speed=0.0, angle=0.0):
+        self.speed = speed
+        self.steering_angle = angle
+
+class TrajectoryPlanEvent:
+    def init(self, trajectory_points):
+        self.trajectory_points = trajectory_points
+
+class EventBus:
+    def publish(self, event_name, data):
+        print(f"Event Published: {event_name} -> {data}")
+
+class ReceivedMessage:
+    def init(self, raw_data, source):
+        self.raw_data = raw_data
+        self.source = source
+        
 # 5.3.5 ControlModule
 class ControlModule:
     def handle_plan(self, event):
